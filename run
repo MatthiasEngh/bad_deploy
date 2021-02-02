@@ -1,21 +1,14 @@
-#!/bin/zsh
-set -eu
+#!/bin/zsh -eu
 
-instance_dir=${argv[1]}
-command_config=${argv[2]}
+instance_ssh_config=${argv[1]}
+remote_command=${argv[2]}
 
-instance_ssh_config="${instance_dir}/ssh-config.conf"
-echo "prepared to read ssh config: ${instance_ssh_config}"
+echo "${0:a:h} prepared to read ssh config: ${instance_ssh_config}"
 source $instance_ssh_config
 
 run () {
     ssh -i ${ssh_identity_file} ${ssh_user}@${ssh_host} $1
 }
 
-echo "prepared to read command config: ${command_config}"
-REMOTE_HOME=$(run "pwd") source $command_config
-
-for remote_command in ${remote_commands}; do
-    echo "preparing to run ${remote_command}"
-    run "${remote_command}"
-done
+echo "preparing to run ${remote_command}"
+run "${remote_command}"

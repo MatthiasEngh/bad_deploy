@@ -5,8 +5,34 @@ echo "feature directory: $feature_dir"
 instance_file=$2
 echo "instance config: $instance_file"
 
-read_conf="${0:a:h}/read_conf"
+util_dir=${0:a:h}
+read_conf="$util_dir/read_conf"
 config=$feature_dir/deploy.conf
 params=('command_dir' 'files_dir' 'sequence')
 source $read_conf $config ${params[@]}
 
+$util_dir/remote_home $instance_file
+export remote_home=$($util_dir/remote_home $instance_file)
+echo "REMOTE $remote_home"
+
+for step in $sequence
+do
+    if [[ $step == upload:* ]]
+    then
+        file=$(echo $step | sed -r 's/.*:(.*)/\1/')
+        echo "uploading $file"
+        file_path=$feature_dir/$files_dir/$file
+        echo "file found in $file_path"
+        $util_dir/upload $instance_file $file_path
+    elif [[ $step == run:* ]]
+    then
+        command=$(echo $step | sed -r 's/.*:(.*)/\1/')
+        echo "running $command"
+        command_config=$feature_dir/$command_dir/$command.conf
+        echo "command conf: $command_config"
+        source $util_dir/read_conf $command_config remote_command
+        $util_dir/run $instance_file $remote_command
+    else
+        echo "ill formatted command: $step"
+    fi
+done

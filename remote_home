@@ -1,0 +1,6 @@
+#!/bin/zsh -eu
+
+instance_file=${argv[1]}
+
+util_dir=${0:a:h}
+echo $($util_dir/run $instance_file "pwd" | tail -n 1)
