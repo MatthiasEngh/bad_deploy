@@ -1,0 +1,12 @@
+#!/bin/zsh -eu
+
+feature_dir=$1
+echo "feature directory: $feature_dir"
+instance_file=$2
+echo "instance config: $instance_file"
+
+read_conf="${0:a:h}/read_conf"
+config=$feature_dir/deploy.conf
+params=('command_dir' 'files_dir' 'sequence')
+source $read_conf $config ${params[@]}
+

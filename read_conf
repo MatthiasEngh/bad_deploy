@@ -1,0 +1,31 @@
+#!/bin/zsh
+
+number_of_args=${#@[@]}
+config=${@[1]}
+
+is_array(){
+    [ ${#@[@]} -gt 1 ]
+}
+
+(
+    set -eu
+    source $config
+    for ((i = 2; i <= $number_of_args; i++))
+    do
+        variable_name=${@[$i]}
+        if is_array ${(P)variable_name}
+        then
+            print "typeset -a $variable_name=(${(P)variable_name})"
+        else
+            print "typeset $variable_name=${(P)variable_name}"
+        fi
+    done
+) | while read line
+do
+    if [[ $line == typeset\ * ]]
+    then
+        eval "$line"
+    else
+        echo "$line"
+    fi
+done
