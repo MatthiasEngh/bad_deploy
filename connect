@@ -1,0 +1,9 @@
+#!/bin/zsh -eu
+
+instance_ssh_config=${argv[1]}
+
+echo "prepared to read ssh config: ${instance_ssh_config}"
+source $instance_ssh_config
+
+echo "prepared to connect to ${ssh_host} as ${ssh_user}"
+ssh -i ${ssh_identity_file} ${ssh_user}@${ssh_host}
